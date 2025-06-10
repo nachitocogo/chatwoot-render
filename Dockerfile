@@ -5,4 +5,4 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD [ "bin/docker-start" ]
+CMD ["bash", "-c", "bundle exec rails db:chatwoot_prepare && bundle exec puma -C config/puma.rb"]
