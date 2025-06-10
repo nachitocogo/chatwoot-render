@@ -1,29 +1,33 @@
-FROM ruby:3.4.4
+FROM ruby:3.2.2
 
-# Actualiza e instala dependencias básicas + Node.js 18 (con Corepack)
+# Dependencias necesarias
 RUN apt-get update -qq && apt-get install -y \
-  curl gnupg2 build-essential libpq-dev git \
-  && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-  && apt-get install -y nodejs
+  build-essential \
+  libpq-dev \
+  nodejs \
+  curl \
+  git \
+  yarn \
+  imagemagick \
+  postgresql-client \
+  gnupg2
 
-# Activar Corepack y Yarn 4+
+# Activar Corepack y usar Yarn moderno
 RUN corepack enable && corepack prepare yarn@4.0.2 --activate
 
-# Crear app y setear directorio
-RUN mkdir /chatwoot
-WORKDIR /chatwoot
+# Crear carpeta y setear app
+RUN mkdir /app
+WORKDIR /app
 
-# Clonar ChatWoot
+# Clonar Chatwoot
 RUN git clone https://github.com/chatwoot/chatwoot.git . && git checkout develop
 
-# Instalar dependencias Ruby
-RUN gem install bundler && bundle install
+# Instalar bundler y dependencias Ruby
+RUN gem install bundler && bundle config set deployment 'true' && bundle install
 
-# Precompilar assets con Yarn moderno
-RUN yarn install --immutable && yarn build
+# Instalar dependencias JS y precompilar assets
+RUN yarn install --immutable && bundle exec rake assets:precompile
 
-# Exponer puerto
+# Exponer puerto y correr Puma
 EXPOSE 3000
-
-# Comando de inicio
 CMD ["bash", "-c", "bundle exec rails db:chatwoot_prepare && bundle exec puma -C config/puma.rb"]
