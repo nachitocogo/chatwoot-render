@@ -11,10 +11,10 @@ RUN apt-get update -qq && apt-get install -y \
   postgresql-client \
   gnupg2
 
-# Instalar Node.js moderno + Yarn moderno sin Corepack
+# Instalar Node.js 18 y Yarn clásico
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g yarn@4.1.0
+    npm install -g yarn@1.22.22
 
 # Crear carpeta y setear app
 RUN mkdir /app
