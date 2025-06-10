@@ -11,10 +11,13 @@ RUN apt-get update -qq && apt-get install -y \
   postgresql-client \
   gnupg2
 
-# Instalar Yarn manualmente
+# Instalar Yarn manualmente y habilitar Corepack
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get install -y yarn
+
+# Habilitar Corepack y preparar Yarn moderno
+RUN corepack enable && corepack prepare yarn@4.1.0 --activate
 
 # Crear carpeta y setear app
 RUN mkdir /app
