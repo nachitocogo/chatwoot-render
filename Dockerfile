@@ -7,13 +7,14 @@ RUN apt-get update -qq && apt-get install -y \
   nodejs \
   curl \
   git \
-  yarn \
   imagemagick \
   postgresql-client \
   gnupg2
 
-# Activar Corepack y usar Yarn moderno
-RUN corepack enable && corepack prepare yarn@4.0.2 --activate
+# Instalar Yarn manualmente
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
 
 # Crear carpeta y setear app
 RUN mkdir /app
@@ -26,7 +27,7 @@ RUN git clone https://github.com/chatwoot/chatwoot.git . && git checkout develop
 RUN gem install bundler && bundle config set deployment 'true' && bundle install
 
 # Instalar dependencias JS y precompilar assets
-RUN yarn install --immutable && bundle exec rake assets:precompile
+RUN yarn install && bundle exec rake assets:precompile
 
 # Exponer puerto y correr Puma
 EXPOSE 3000
