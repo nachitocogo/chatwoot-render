@@ -20,8 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 RUN mkdir /app
 WORKDIR /app
 
-# Clonar Chatwoot
-RUN git clone https://github.com/chatwoot/chatwoot.git . && git checkout develop
+RUN git clone https://github.com/chatwoot/chatwoot.git . && \
+    git checkout develop && \
+    sed -i '/"packageManager":/d' package.json
 
 # Instalar bundler y dependencias Ruby
 RUN gem install bundler && bundle config set deployment 'true' && bundle install
